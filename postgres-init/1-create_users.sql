@@ -1,0 +1,1 @@
+CREATE USER spisum WITH PASSWORD 'spisum';
