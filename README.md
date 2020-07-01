@@ -1,4 +1,13 @@
 # alfresco-core
+## Version
+
+v1.0-beta
+
+## Prerequisities
+
+- GIT
+- Docker
+- Docker-compose
 
 ## How to run application in docker
 
@@ -7,6 +16,3 @@
     $ cd alfesco-core
     $ sh compose.sh
 ```
-## Prerequisites
-- Java 11
-- Docker
