@@ -7,3 +7,6 @@
     $ cd alfesco-core
     $ sh compose.sh
 ```
+## Prerequisites
+- Java 11
+- Docker
