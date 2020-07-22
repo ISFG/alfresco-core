@@ -1,5 +1,6 @@
 #!/bin/sh
 
+sudo network create spisum_network
 sudo docker volume create alf-repo-data
 sudo docker volume create postgres-data
 sudo docker volume create solr-data

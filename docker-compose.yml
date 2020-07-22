@@ -25,6 +25,8 @@ services:
                 "
         ports:
             - 8082:8080 #Browser port
+        networks: 
+            - spisum_network
         volumes:
             - alf-repo-data:/usr/local/tomcat/alf_data
             - ./alfresco-global.properties:/usr/local/tomcat/shared/classes/alfresco-global.properties
@@ -40,6 +42,8 @@ services:
         command: postgres -c max_connections=300 -c log_min_messages=LOG
         ports:
             - 5432:5432
+        networks: 
+            - spisum_network
         volumes:
             - postgres-data:/var/lib/postgresql/data
             # only run if you start the container with a data directory that is empty
@@ -62,6 +66,8 @@ services:
             - "SOLR_JAVA_MEM=-Xms2g -Xmx2g"
         ports:
             - 8083:8983 #Browser port
+        networks: 
+            - spisum_network
         volumes:
             - solr-data:/opt/alfresco-search-services/data
             
@@ -73,6 +79,8 @@ services:
             - 5672:5672 # AMQP
             - 61616:61616 # OpenWire
             - 61613:61613 # STOMP
+        networks: 
+            - spisum_network
             
 volumes:
     alf-repo-data:
@@ -85,3 +93,7 @@ volumes:
         driver_opts:
             type: tmpfs
             device: tmpfs
+
+networks: 
+    spisum_network:
+        external: true
