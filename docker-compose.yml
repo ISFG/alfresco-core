@@ -23,15 +23,51 @@ services:
                 -Ddeployment.method=DOCKER_COMPOSE
                 -Dcsrf.filter.enabled=false
                 -Xms1500m -Xmx1500m
+
+                -Dlocal.transform.service.enabled=true
+                -DlocalTransform.libreoffice.url=http://libreoffice:8090/
+
+                -Dlegacy.transform.service.enabled=true
+                -Djodconverter.url=http://libreoffice:8090/
                 "
         ports:
             - 127.0.0.1:8082:8080 #Browser port
-        networks: 
+        networks:
             - spisum_network
         volumes:
             - alf-repo-data:/usr/local/tomcat/alf_data
             - ./alfresco-global.properties:/usr/local/tomcat/shared/classes/alfresco-global.properties
             - ./mimetypes-extension-map.xml:/usr/local/tomcat/shared/classes/alfresco/extension/mimetype/mimetypes-extension-map.xml
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+
+    libreoffice:
+        image: alfresco/alfresco-libreoffice:2.1.0
+        restart: unless-stopped
+        mem_limit: 1g
+        environment:
+            JAVA_OPTS: " -Xms256m -Xmx512m"
+            ACTIVEMQ_URL: "nio://activemq:61616"
+            FILE_STORE_URL: "http://shared-file-store:8099/alfresco/api/-default-/private/sfs/versions/1/file"
+        ports:
+            - 127.0.0.1:8092:8090
+        networks:
+            - spisum_network
+
+    shared-file-store:
+        image: alfresco/alfresco-shared-file-store:0.6.0
+        restart: unless-stopped
+        mem_limit: 512m
+        environment:
+            JAVA_OPTS: "-Xms256m -Xmx512m"
+            scheduler.content.age.millis: 86400000
+            scheduler.cleanup.interval: 86400000
+        ports:
+            - 127.0.0.1:8099:8099
+        networks:
+            - spisum_network
+        volumes:
+            - shared-file-store-volume:/tmp/Alfresco/sfs
 
     postgres:
         image: postgres:12.1
@@ -44,12 +80,14 @@ services:
         command: postgres -c max_connections=300 -c log_min_messages=LOG
         ports:
             - 127.0.0.1:5432:5432
-        networks: 
+        networks:
             - spisum_network
         volumes:
             - postgres-data:/var/lib/postgresql/data
             # only run if you start the container with a data directory that is empty
             - ./postgres-init:/docker-entrypoint-initdb.d
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
 
     solr6:
         image: alfresco/alfresco-search-services:1.4.1
@@ -69,11 +107,13 @@ services:
             - "SOLR_JAVA_MEM=-Xms2g -Xmx2g"
         ports:
             - 127.0.0.1:8083:8983 #Browser port
-        networks: 
+        networks:
             - spisum_network
         volumes:
             - solr-data:/opt/alfresco-search-services/data
-            
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+
     activemq:
         image: alfresco/alfresco-activemq:5.15.8
         restart: unless-stopped
@@ -83,21 +123,24 @@ services:
             - 127.0.0.1:5672:5672 # AMQP
             - 127.0.0.1:61616:61616 # OpenWire
             - 127.0.0.1:61613:61613 # STOMP
-        networks: 
+        networks:
             - spisum_network
-            
+        volumes:
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+
 volumes:
     alf-repo-data:
         external: true
     postgres-data:
         external: true
     solr-data:
-        external: true   
+        external: true
     shared-file-store-volume:
         driver_opts:
             type: tmpfs
             device: tmpfs
 
-networks: 
+networks:
     spisum_network:
         external: true
