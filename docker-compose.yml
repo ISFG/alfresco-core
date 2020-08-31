@@ -2,7 +2,7 @@ version: "2"
 
 services:
     alfresco:
-        image: alfresco/alfresco-governance-repository-community:V3.3.0.x-latest
+        image: alfresco/alfresco-content-repository-community:6.2.1-RC1
         mem_limit: 1500m
         restart: unless-stopped
         environment:

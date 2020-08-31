@@ -118,7 +118,7 @@ CREATE TABLE transaction_history
     -- Alfresco node/object type
     fk_node_type_code text NOT NULL,
     -- Datum a cas vzniku události, co časová zona?
-    occured_at timestamp NOT NULL,
+    occured_at timestamp with time zone NOT NULL,
     -- Autor změny
     user_id text NOT NULL,
     -- usergroup id
@@ -132,7 +132,7 @@ CREATE TABLE transaction_history
     -- hash záznamu
     row_hash text NOT NULL,
     -- čas vlozeni záznamu do DB
-    processed_at timestamp NOT NULL DEFAULT clock_timestamp(),
+    processed_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
     -- databázový uživatel, který vložil záznam
     processed_by text NOT NULL DEFAULT session_user::text,
 
